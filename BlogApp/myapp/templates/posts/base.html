@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My BlogApp</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-blue-600 tracking-tight">
+      <a href="{% url 'home' %}">MyBlog</a>
+    </h1>
+    <div>
+      <a href="{% url 'post-create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all">
+        Create Post
+      </a>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="flex-grow container mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-4 mt-auto shadow-inner">
+    <p class="text-gray-500 text-sm">© {{ now|date:"Y" }} My BlogApp — Built with ❤️ by Mike</p>
+  </footer>
+
+</body>
+</html>
