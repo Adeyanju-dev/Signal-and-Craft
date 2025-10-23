@@ -1,17 +1,37 @@
 {% extends 'posts/base.html' %}
 {% block content %}
-<div class="max-w-3xl mx-auto bg-white shadow-md rounded-xl p-8">
-  <h2 class="text-3xl font-bold text-gray-900 mb-3">{{ post.title }}</h2>
-  <p class="text-sm text-gray-500 mb-6">{{ post.created_at|date:"F j, Y, g:i a" }}</p>
-  <p class="text-gray-700 leading-relaxed mb-8">{{ post.content }}</p>
 
-  <div class="flex gap-4">
+<div class="max-w-3xl mx-auto bg-white/80 dark:bg-slate-800/80 shadow-lg rounded-2xl p-8 animate-fadeIn">
+  <!-- Title -->
+  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-3">{{ post.title }}</h1>
+
+  <!-- Date -->
+  <p class="text-sm text-gray-500 mb-6">
+    Published on {{ post.created_at|date:"F j, Y" }}
+  </p>
+
+  <!-- Content -->
+  <div class="text-gray-800 dark:text-gray-200 leading-relaxed mb-8">
+    {{ post.content|linebreaks }}
+  </div>
+
+  <!-- Action buttons -->
+  <div class="flex flex-wrap gap-4">
+    <a href="{% url 'home' %}" 
+       class="bg-gray-300 dark:bg-slate-700 hover:bg-gray-400 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-200 px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-md">
+      ← Back to Home
+    </a>
+
     <a href="{% url 'post-edit' post.pk %}"
-       class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg transition-all">Edit</a>
+       class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-lg">
+      ✏️ Edit
+    </a>
+
     <a href="{% url 'post-delete' post.pk %}"
-       class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg transition-all">Delete</a>
-    <a href="{% url 'home' %}"
-       class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded-lg transition-all">Back</a>
+       class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-lg">
+      🗑️ Delete
+    </a>
   </div>
 </div>
+
 {% endblock %}

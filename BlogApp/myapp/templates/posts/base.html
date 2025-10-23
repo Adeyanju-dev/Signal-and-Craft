@@ -1,35 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My BlogApp</title>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config for dark mode -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            secondary: '#1e293b',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Smooth fade-in animation -->
+  <style>
+    body {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-slate-100 to-slate-200 min-h-screen flex flex-col">
+
+<body class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 min-h-screen flex flex-col text-gray-800 dark:text-gray-100 transition-colors duration-500">
 
   <!-- Navbar -->
-  <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-blue-600 tracking-tight">
+  <nav class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-md py-4 px-8 flex justify-between items-center transition-all duration-500">
+    <h1 class="text-2xl font-bold text-primary tracking-tight hover:scale-105 transition-transform">
       <a href="{% url 'home' %}">MyBlog</a>
     </h1>
-    <div>
-      <a href="{% url 'post-create' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all">
+
+    <div class="flex items-center gap-4">
+      <a href="{% url 'post-create' %}" 
+         class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-md hover:shadow-lg transition-all">
         Create Post
       </a>
+
+      <!-- Theme Toggle -->
+      <button id="theme-toggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-700 transition-all hover:scale-110">
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-11.66l-.707.707M4.05 19.95l.707-.707M21 12h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+        </svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 118.646 3.646 7 7 0 0020.354 15.354z" />
+        </svg>
+      </button>
     </div>
   </nav>
 
   <!-- Content -->
-  <main class="flex-grow container mx-auto px-4 py-8">
+  <main class="flex-grow container mx-auto px-4 py-10">
     {% block content %}{% endblock %}
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white text-center py-4 mt-auto shadow-inner">
-    <p class="text-gray-500 text-sm">© {{ now|date:"Y" }} My BlogApp — Built with ❤️ by Mike</p>
+  <footer class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md text-center py-4 mt-auto shadow-inner">
+    <p class="text-gray-500 dark:text-gray-400 text-sm transition-all">© {{ now|date:"Y" }} My BlogApp — Built with ❤️ by Mike</p>
   </footer>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+
+    // Set initial theme
+    if (localStorage.theme === 'dark' || 
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+      moonIcon.classList.add('hidden');
+      sunIcon.classList.remove('hidden');
+    } else {
+      document.documentElement.classList.remove('dark');
+      sunIcon.classList.add('hidden');
+      moonIcon.classList.remove('hidden');
+    }
+
+    // Toggle handler
+    toggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      if (document.documentElement.classList.contains('dark')) {
+        localStorage.theme = 'dark';
+        moonIcon.classList.add('hidden');
+        sunIcon.classList.remove('hidden');
+      } else {
+        localStorage.theme = 'light';
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+      }
+    });
+  </script>
 
 </body>
 </html>
