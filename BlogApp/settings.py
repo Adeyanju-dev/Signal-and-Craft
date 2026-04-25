@@ -13,18 +13,21 @@ def env_flag(name, default=False):
 
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-2qvf#zdu$jps70xv5*igx(v&twv%u=iiz+5r0wz8qsbc!4$skv",
 )
-DEBUG = env_flag("DJANGO_DEBUG", default=True)
+DEBUG = env_flag("DJANGO_DEBUG", default=False) == "True"
 ALLOWED_HOSTS = [
-    host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "signal-and-craft.onrender.com").split(",")
     if host.strip()
 ]
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    for origin in os.getenv(
+        "DJANGO_CSRF_TRUSTED_ORIGINS",
+        "https://signal-and-craft.onrender.com"
+    ).split(",")
     if origin.strip()
 ]
+
 
 
 # Application definition
