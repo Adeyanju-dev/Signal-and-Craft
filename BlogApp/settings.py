@@ -14,7 +14,8 @@ def env_flag(name, default=False):
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
 )
-DEBUG = env_flag("DJANGO_DEBUG", default=False) == "True"
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+
 ALLOWED_HOSTS = [
     host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "signal-and-craft.onrender.com").split(",")
     if host.strip()
