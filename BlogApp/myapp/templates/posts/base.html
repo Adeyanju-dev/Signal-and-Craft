@@ -3,106 +3,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My BlogApp</title>
-
-  <!-- Tailwind CSS CDN -->
+  <title>{% block title %}Signal &amp; Craft{% endblock %}</title>
+  <meta name="description" content="Essays on software design, product thinking, and the operational details that shape reliable digital products.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Tailwind Config for dark mode -->
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            display: ['Fraunces', 'serif'],
+            body: ['Manrope', 'sans-serif'],
+          },
           colors: {
-            primary: '#2563eb',
-            secondary: '#1e293b',
+            ink: '#18212f',
+            accent: '#0f766e',
+            accentSoft: '#d5f3ee',
+          },
+          boxShadow: {
+            panel: '0 18px 60px rgba(15, 23, 42, 0.08)',
           },
         },
       },
     };
   </script>
-
-  <!-- Smooth fade-in animation -->
   <style>
     body {
-      animation: fadeIn 0.6s ease-in-out;
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 32%),
+        radial-gradient(circle at top right, rgba(183, 121, 31, 0.10), transparent 22%),
+        linear-gradient(180deg, #f8f6f0 0%, #eef2f4 100%);
+      animation: fadeIn 0.45s ease-out;
     }
+
+    .dark body {
+      background:
+        radial-gradient(circle at top left, rgba(20, 184, 166, 0.10), transparent 26%),
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.08), transparent 20%),
+        linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    }
+
+    .editorial-copy p + p {
+      margin-top: 1.25rem;
+    }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
+<body class="min-h-screen font-body text-ink antialiased transition-colors duration-300 dark:text-slate-100">
+  <div class="min-h-screen bg-white/45 dark:bg-slate-950/40">
+    <header class="border-b border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/70">
+      <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <a href="{% url 'home' %}" class="font-display text-3xl text-ink transition hover:text-accent dark:text-white dark:hover:text-teal-300">
+            Signal &amp; Craft
+          </a>
+          <p class="mt-2 max-w-xl text-sm text-slate-600 dark:text-slate-300">
+            Essays on software design, product judgment, and the systems work that keeps digital products steady.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="{% url 'home' %}" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent dark:border-slate-700 dark:text-slate-200 dark:hover:border-teal-400 dark:hover:text-teal-300">
+            Journal
+          </a>
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'post-create' %}" class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 dark:hover:bg-teal-500">
+              Write
+            </a>
+            {% if request.user.is_staff %}
+              <a href="/admin/" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent dark:border-slate-700 dark:text-slate-200 dark:hover:border-teal-400 dark:hover:text-teal-300">
+                Admin
+              </a>
+            {% endif %}
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-accent hover:text-accent dark:border-slate-700 dark:text-slate-200 dark:hover:border-teal-400 dark:hover:text-teal-300">
+                Sign out
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 dark:hover:bg-teal-500">
+              Sign in
+            </a>
+          {% endif %}
+          <button id="theme-toggle" type="button" aria-label="Toggle theme" class="rounded-full border border-slate-300 p-2 text-slate-700 transition hover:border-accent hover:text-accent dark:border-slate-700 dark:text-slate-100 dark:hover:border-teal-400 dark:hover:text-teal-300">
+            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3v2.25M12 18.75V21M4.97 4.97l1.59 1.59M17.44 17.44l1.59 1.59M3 12h2.25M18.75 12H21M4.97 19.03l1.59-1.59M17.44 6.56l1.59-1.59M12 16.5A4.5 4.5 0 1 0 12 7.5a4.5 4.5 0 0 0 0 9Z" />
+            </svg>
+            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M21 12.79A9 9 0 0 1 11.21 3c0 .34-.03.67-.08 1A9 9 0 1 0 20 12.87c.34-.05.67-.08 1-.08Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
 
-<body class="bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 min-h-screen flex flex-col text-gray-800 dark:text-gray-100 transition-colors duration-500">
+    <main class="mx-auto max-w-6xl px-4 py-10 md:py-14">
+      {% block content %}{% endblock %}
+    </main>
 
-  <!-- Navbar -->
-  <nav class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-md py-4 px-8 flex justify-between items-center transition-all duration-500">
-    <h1 class="text-2xl font-bold text-primary tracking-tight hover:scale-105 transition-transform">
-      <a href="{% url 'home' %}">MyBlog</a>
-    </h1>
+    <footer class="border-t border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/70">
+      <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-slate-600 dark:text-slate-300 md:flex-row md:items-center md:justify-between">
+        <p>&copy; {% now "Y" %} Signal &amp; Craft.</p>
+        <p>Writing on engineering, interface design, and product operations.</p>
+      </div>
+    </footer>
+  </div>
 
-    <div class="flex items-center gap-4">
-      <a href="{% url 'post-create' %}" 
-         class="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-md hover:shadow-lg transition-all">
-        Create Post
-      </a>
-
-      <!-- Theme Toggle -->
-      <button id="theme-toggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-700 transition-all hover:scale-110">
-        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-11.66l-.707.707M4.05 19.95l.707-.707M21 12h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-        </svg>
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 118.646 3.646 7 7 0 0020.354 15.354z" />
-        </svg>
-      </button>
-    </div>
-  </nav>
-
-  <!-- Content -->
-  <main class="flex-grow container mx-auto px-4 py-10">
-    {% block content %}{% endblock %}
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md text-center py-4 mt-auto shadow-inner">
-    <p class="text-gray-500 dark:text-gray-400 text-sm transition-all">© {{ now|date:"Y" }} My BlogApp — Built with ❤️ by Mike</p>
-  </footer>
-
-  <!-- Theme Toggle Script -->
   <script>
     const toggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
 
-    // Set initial theme
-    if (localStorage.theme === 'dark' || 
-        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      moonIcon.classList.add('hidden');
-      sunIcon.classList.remove('hidden');
-    } else {
-      document.documentElement.classList.remove('dark');
-      sunIcon.classList.add('hidden');
-      moonIcon.classList.remove('hidden');
+    function syncThemeIcons(isDark) {
+      sunIcon.classList.toggle('hidden', !isDark);
+      moonIcon.classList.toggle('hidden', isDark);
     }
 
-    // Toggle handler
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldUseDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && prefersDark);
+
+    document.documentElement.classList.toggle('dark', shouldUseDark);
+    syncThemeIcons(shouldUseDark);
+
     toggle.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
-      if (document.documentElement.classList.contains('dark')) {
-        localStorage.theme = 'dark';
-        moonIcon.classList.add('hidden');
-        sunIcon.classList.remove('hidden');
-      } else {
-        localStorage.theme = 'light';
-        sunIcon.classList.add('hidden');
-        moonIcon.classList.remove('hidden');
-      }
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.theme = isDark ? 'dark' : 'light';
+      syncThemeIcons(isDark);
     });
   </script>
-
 </body>
 </html>

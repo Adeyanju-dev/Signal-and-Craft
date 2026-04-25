@@ -1,37 +1,54 @@
 {% extends 'posts/base.html' %}
+{% block title %}{{ post.title }} | Signal &amp; Craft{% endblock %}
 {% block content %}
 
-<div class="max-w-3xl mx-auto bg-white/80 dark:bg-slate-800/80 shadow-lg rounded-2xl p-8 animate-fadeIn">
-  <!-- Title -->
-  <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-3">{{ post.title }}</h1>
+<article class="mx-auto max-w-4xl">
+  <div class="rounded-[2rem] border border-slate-200 bg-white/90 p-8 shadow-panel dark:border-slate-800 dark:bg-slate-900/85 md:p-12">
+    <a href="{% url 'home' %}" class="text-sm font-semibold text-accent transition hover:text-teal-700 dark:text-teal-300 dark:hover:text-teal-200">
+      Back to journal
+    </a>
 
-  <!-- Date -->
-  <p class="text-sm text-gray-500 mb-6">
-    Published on {{ post.created_at|date:"F j, Y" }}
-  </p>
+    <div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-300">
+      <span class="rounded-full bg-accentSoft px-3 py-1 font-semibold text-accent dark:bg-teal-950 dark:text-teal-300">
+        {{ post.get_category_display }}
+      </span>
+      <span>{{ post.created_at|date:"F j, Y" }}</span>
+      <span>{{ post.reading_time_minutes }} min read</span>
+      <span>{{ post.author_name }}</span>
+      {% if post.updated_at and post.updated_at.date != post.created_at.date %}
+        <span>Updated {{ post.updated_at|date:"F j, Y" }}</span>
+      {% endif %}
+    </div>
 
-  <!-- Content -->
-  <div class="text-gray-800 dark:text-gray-200 leading-relaxed mb-8">
-    {{ post.content|linebreaks }}
+    <h1 class="mt-6 font-display text-4xl leading-tight text-ink dark:text-white md:text-6xl">
+      {{ post.title }}
+    </h1>
+
+    {% if post.subtitle %}
+      <p class="mt-5 max-w-3xl text-xl leading-8 text-slate-700 dark:text-slate-200">
+        {{ post.subtitle }}
+      </p>
+    {% endif %}
+
+    <p class="mt-5 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300">
+      {{ post.excerpt }}
+    </p>
+
+    <div class="editorial-copy mt-10 text-lg leading-8 text-slate-800 dark:text-slate-200">
+      {{ post.content|linebreaks }}
+    </div>
+
+    {% if request.user.is_authenticated %}
+      <div class="mt-10 flex flex-wrap gap-3 border-t border-slate-200 pt-6 dark:border-slate-800">
+        <a href="{% url 'post-edit' post.slug %}" class="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+          Edit article
+        </a>
+        <a href="{% url 'post-delete' post.slug %}" class="rounded-full border border-rose-300 px-5 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 dark:border-rose-800 dark:text-rose-300 dark:hover:bg-rose-950/40">
+          Delete article
+        </a>
+      </div>
+    {% endif %}
   </div>
-
-  <!-- Action buttons -->
-  <div class="flex flex-wrap gap-4">
-    <a href="{% url 'home' %}" 
-       class="bg-gray-300 dark:bg-slate-700 hover:bg-gray-400 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-200 px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-md">
-      ← Back to Home
-    </a>
-
-    <a href="{% url 'post-edit' post.pk %}"
-       class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-lg">
-      ✏️ Edit
-    </a>
-
-    <a href="{% url 'post-delete' post.pk %}"
-       class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg shadow-sm transition-all hover:shadow-lg">
-      🗑️ Delete
-    </a>
-  </div>
-</div>
+</article>
 
 {% endblock %}
